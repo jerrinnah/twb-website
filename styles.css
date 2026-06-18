@@ -88,6 +88,13 @@ nav {
   font-size: 1.3rem; color: var(--black); line-height: 1;
 }
 
+/* ── BRAND LOGO ──────────────────────── */
+.brand-logo { display: block; width: auto; height: 38px; }
+/* On dark backgrounds, render the black wordmark in white */
+.brand-logo.invert { filter: invert(1) brightness(1.08); }
+.nav-logo .brand-logo { height: 38px; }
+.footer-logo .brand-logo { height: 30px; }
+
 /* ── BUTTONS ─────────────────────────── */
 .btn-pill-white, .btn-pill-blue {
   padding: 0.75rem 1.5rem; border-radius: 999px; border: none;

@@ -11,5 +11,6 @@ deployment:
     - /bin/cp -Rf includes $DEPLOYPATH
     - /bin/cp -Rf admin $DEPLOYPATH
     - /bin/cp -Rf sql $DEPLOYPATH
+    - /bin/cp -Rf assets $DEPLOYPATH
     # Uploads: only copy the protective .htaccess, never overwrite stored media
     - /bin/cp -f uploads/.htaccess $DEPLOYPATH/uploads/
