@@ -15,6 +15,7 @@ $menu = [
     ['posts',     '/admin/posts.php',    'Blog Posts'],
     ['pages',     '/admin/pages.php',    'Page Content'],
     ['messages',  '/admin/messages.php', 'Messages'],
+    ['users',     '/admin/users.php',    'Admin Users'],
     ['settings',  '/admin/settings.php', 'Settings'],
 ];
 

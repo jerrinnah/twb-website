@@ -25,4 +25,4 @@ define('ADMIN_EMAIL', 'hello@thewalkingbillboard.com');
 define('APP_SECRET', 'change-this-to-a-long-random-string');
 
 // Set to true only while debugging; false in production.
-define('APP_DEBUG', false);
+define('APP_DEBUG', true);
