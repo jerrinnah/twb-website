@@ -9,3 +9,4 @@ deployment:
     - /bin/cp contact.html $DEPLOYPATH
     - /bin/cp styles.css $DEPLOYPATH
     - /bin/cp script.js $DEPLOYPATH
+    - /bin/cp .htaccess $DEPLOYPATH
