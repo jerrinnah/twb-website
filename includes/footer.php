@@ -18,6 +18,6 @@ $year = date('Y');
   <p class="footer-copy">© <span id="year"><?= $year ?></span> <?= e(setting('site.name', 'The Walking Billboard')) ?>. All rights reserved.</p>
 </footer>
 
-<script src="/script.js"></script>
+<script src="/script.js?v=<?= @filemtime(__DIR__ . '/../script.js') ?: '1' ?>"></script>
 </body>
 </html>

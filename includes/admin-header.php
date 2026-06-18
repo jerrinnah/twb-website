@@ -35,7 +35,7 @@ try {
 <link rel="icon" href="<?= e(setting('site.logo', '/assets/logo.png')) ?>" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/admin/admin.css">
+<link rel="stylesheet" href="/admin/admin.css?v=<?= @filemtime(__DIR__ . '/../admin/admin.css') ?: '1' ?>">
 </head>
 <body class="admin">
 <div class="admin-shell">
