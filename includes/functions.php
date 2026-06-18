@@ -106,27 +106,43 @@ function fmt_date(?string $datetime): string
 }
 
 /* ── Post queries ────────────────────────────────────────── */
-function get_published_posts(int $limit = 9, int $offset = 0): array
+function get_published_posts(int $limit = 9, int $offset = 0, ?string $categorySlug = null): array
 {
+    $where  = 'p.status = "published" AND (p.published_at IS NULL OR p.published_at <= NOW())';
+    $params = [];
+    if ($categorySlug) {
+        $where   .= ' AND c.slug = ?';
+        $params[] = $categorySlug;
+    }
     $stmt = db()->prepare(
         'SELECT p.*, c.name AS category_name, c.slug AS category_slug
          FROM posts p LEFT JOIN categories c ON c.id = p.category_id
-         WHERE p.status = "published" AND (p.published_at IS NULL OR p.published_at <= NOW())
+         WHERE ' . $where . '
          ORDER BY COALESCE(p.published_at, p.created_at) DESC
          LIMIT ? OFFSET ?'
     );
-    $stmt->bindValue(1, $limit, PDO::PARAM_INT);
-    $stmt->bindValue(2, $offset, PDO::PARAM_INT);
+    $i = 1;
+    foreach ($params as $p) { $stmt->bindValue($i++, $p); }
+    $stmt->bindValue($i++, $limit, PDO::PARAM_INT);
+    $stmt->bindValue($i++, $offset, PDO::PARAM_INT);
     $stmt->execute();
     return $stmt->fetchAll();
 }
 
-function count_published_posts(): int
+function count_published_posts(?string $categorySlug = null): int
 {
     try {
-        return (int) db()->query(
-            'SELECT COUNT(*) FROM posts WHERE status = "published" AND (published_at IS NULL OR published_at <= NOW())'
-        )->fetchColumn();
+        $where  = 'p.status = "published" AND (p.published_at IS NULL OR p.published_at <= NOW())';
+        $params = [];
+        if ($categorySlug) {
+            $where   .= ' AND c.slug = ?';
+            $params[] = $categorySlug;
+        }
+        $stmt = db()->prepare(
+            'SELECT COUNT(*) FROM posts p LEFT JOIN categories c ON c.id = p.category_id WHERE ' . $where
+        );
+        $stmt->execute($params);
+        return (int) $stmt->fetchColumn();
     } catch (Throwable $e) {
         return 0;
     }
