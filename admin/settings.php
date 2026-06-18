@@ -21,6 +21,22 @@ $me = current_user();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf()) {
     $form = $_POST['form'] ?? '';
 
+    if ($form === 'branding') {
+        if (isset($_POST['reset'])) {
+            set_setting('site.logo', '/assets/logo.png');
+            flash('Logo reset to the default.');
+            redirect('/admin/settings.php');
+        }
+        $result = store_image_upload($_FILES['logo'] ?? []);
+        if (isset($result['error'])) {
+            $errors[] = $result['error'];
+        } else {
+            set_setting('site.logo', $result['url']);
+            flash('Logo updated.');
+            redirect('/admin/settings.php');
+        }
+    }
+
     if ($form === 'site') {
         foreach ($siteFields as [$key, , ]) {
             if (array_key_exists($key, $_POST)) {
@@ -60,6 +76,29 @@ include __DIR__ . '/../includes/admin-header.php';
 ?>
 
 <?php if ($errors): ?><div class="admin-flash error"><?= e(implode(' ', $errors)) ?></div><?php endif; ?>
+
+<?php $logo = setting('site.logo', '/assets/logo.png'); ?>
+<form method="post" action="/admin/settings.php" enctype="multipart/form-data">
+  <?= csrf_field() ?>
+  <input type="hidden" name="form" value="branding">
+  <div class="panel">
+    <h2>Logo</h2>
+    <p class="muted" style="margin-bottom:1.25rem">Shown in the navigation, footer, admin, and as the browser icon. A transparent PNG works best — it appears in white automatically on dark sections.</p>
+    <div class="logo-preview-row">
+      <div class="logo-swatch light"><img src="<?= e($logo) ?>" alt="Logo on light background"></div>
+      <div class="logo-swatch dark"><img class="invert" src="<?= e($logo) ?>" alt="Logo on dark background"></div>
+    </div>
+    <div class="field" style="margin-top:1.25rem">
+      <label for="logo">Upload a new logo</label>
+      <input class="input" id="logo" name="logo" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+      <p class="hint">PNG, JPG, WEBP or GIF · max 5 MB · recommended ~400–600px wide.</p>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" type="submit">Save logo</button>
+      <button class="btn btn-ghost" type="submit" name="reset" value="1" onclick="return confirm('Reset to the default logo?')">Reset to default</button>
+    </div>
+  </div>
+</form>
 
 <form method="post" action="/admin/settings.php">
   <?= csrf_field() ?>

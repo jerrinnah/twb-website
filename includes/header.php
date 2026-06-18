@@ -24,8 +24,8 @@ $nav = [
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= e($page_title) ?></title>
 <meta name="description" content="<?= e($page_desc) ?>">
-<link rel="icon" href="/assets/logo.png" type="image/png">
-<link rel="apple-touch-icon" href="/assets/logo.png">
+<link rel="icon" href="<?= e(setting('site.logo', '/assets/logo.png')) ?>" type="image/png">
+<link rel="apple-touch-icon" href="<?= e(setting('site.logo', '/assets/logo.png')) ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -37,7 +37,7 @@ $nav = [
 <!-- NAV -->
 <nav>
   <a href="/" class="nav-logo" aria-label="The Walking Billboard — home">
-    <img class="brand-logo" src="/assets/logo.png" alt="The Walking Billboard">
+    <img class="brand-logo" src="<?= e(setting('site.logo', '/assets/logo.png')) ?>" alt="The Walking Billboard">
   </a>
   <button class="nav-toggle" aria-label="Toggle navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
   <ul class="nav-links">

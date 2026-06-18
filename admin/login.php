@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Log in · TWB Admin</title>
 <meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="/assets/logo.png" type="image/png">
+<link rel="icon" href="<?= e(setting('site.logo', '/assets/logo.png')) ?>" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/admin/admin.css">
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="admin">
 <div class="login-wrap">
   <div class="login-card">
-    <div class="login-logo"><img class="brand-logo" src="/assets/logo.png" alt="The Walking Billboard"></div>
+    <div class="login-logo"><img class="brand-logo" src="<?= e(setting('site.logo', '/assets/logo.png')) ?>" alt="The Walking Billboard"></div>
     <h1>Welcome back</h1>
     <p class="sub">Sign in to manage your site.</p>
     <?php if ($error): ?><div class="form-banner-admin admin-flash error"><?= e($error) ?></div><?php endif; ?>

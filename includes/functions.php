@@ -153,6 +153,34 @@ function get_categories(): array
     }
 }
 
+/* ── Image uploads ───────────────────────────────────────── */
+/**
+ * Validate + store an uploaded image into /uploads.
+ * Returns ['url' => '/uploads/...'] on success or ['error' => '...'] on failure.
+ */
+function store_image_upload(array $file, int $maxBytes = 5242880): array
+{
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+        return ['error' => 'No file received.'];
+    }
+    if (($file['size'] ?? 0) > $maxBytes) {
+        return ['error' => 'Image too large (max ' . round($maxBytes / 1048576) . ' MB).'];
+    }
+    $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif', 'image/webp' => 'webp'];
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+    if (!isset($allowed[$mime])) {
+        return ['error' => 'Only JPG, PNG, GIF, or WEBP images are allowed.'];
+    }
+    $dir = __DIR__ . '/../uploads';
+    if (!is_dir($dir)) { @mkdir($dir, 0755, true); }
+    $name = date('Ymd-His') . '-' . bin2hex(random_bytes(4)) . '.' . $allowed[$mime];
+    if (!move_uploaded_file($file['tmp_name'], $dir . '/' . $name)) {
+        return ['error' => 'Could not save the file. Check that /uploads is writable.'];
+    }
+    @chmod($dir . '/' . $name, 0644);
+    return ['url' => '/uploads/' . $name];
+}
+
 /* ── CSRF ────────────────────────────────────────────────── */
 function csrf_token(): string
 {

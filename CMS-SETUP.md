@@ -11,7 +11,8 @@ page content. Runs on your existing cPanel hosting. No frameworks, no Composer.
   featured images, inline image uploads, categories, drafts, and SEO excerpts.
 - **Page content** — edit the headlines and text on Home, About, Services,
   Blog, and Contact pages.
-- **Site settings** — phone, email, address, and social links (used site-wide).
+- **Site settings** — phone, email, address, social links, and the **logo**
+  (upload a new one any time under Settings → Logo; used site-wide + favicon).
 - **Messages** — every contact-form submission and homepage signup lands in the
   admin inbox.
 

@@ -6,7 +6,7 @@ $year = date('Y');
 <!-- FOOTER -->
 <footer class="site-footer">
   <a href="/" class="footer-logo" aria-label="The Walking Billboard">
-    <img class="brand-logo invert" src="/assets/logo.png" alt="The Walking Billboard">
+    <img class="brand-logo invert" src="<?= e(setting('site.logo', '/assets/logo.png')) ?>" alt="The Walking Billboard">
   </a>
   <ul class="footer-links">
     <li><a href="/services">Services</a></li>

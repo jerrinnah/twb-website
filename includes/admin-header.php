@@ -31,7 +31,7 @@ try {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= e($admin_title) ?> · TWB Admin</title>
 <meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="/assets/logo.png" type="image/png">
+<link rel="icon" href="<?= e(setting('site.logo', '/assets/logo.png')) ?>" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/admin/admin.css">
@@ -39,7 +39,7 @@ try {
 <body class="admin">
 <div class="admin-shell">
   <aside class="admin-sidebar">
-    <a href="/admin/index.php" class="admin-logo"><img class="brand-logo invert" src="/assets/logo.png" alt="The Walking Billboard"> <span>Admin</span></a>
+    <a href="/admin/index.php" class="admin-logo"><img class="brand-logo invert" src="<?= e(setting('site.logo', '/assets/logo.png')) ?>" alt="The Walking Billboard"> <span>Admin</span></a>
     <nav class="admin-nav">
       <?php foreach ($menu as [$key, $href, $label]): ?>
         <a href="<?= e($href) ?>" class="<?= $admin_active === $key ? 'active' : '' ?>">

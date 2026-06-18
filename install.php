@@ -62,6 +62,7 @@ if ($step === 'form' && $pdo && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 'site.address' => 'Port Harcourt, Rivers State · Nigeria',
                 'site.whatsapp' => 'https://wa.me/2348174623187',
                 'site.instagram' => '#', 'site.twitter' => '#', 'site.facebook' => '#', 'site.linkedin' => '#',
+                'site.logo' => '/assets/logo.png',
                 'site.description' => 'PR and brand strategy studio in Port Harcourt, Nigeria.',
                 'site.url' => defined('SITE_URL') ? SITE_URL : 'https://thewbillboard.com',
             ];
@@ -85,7 +86,7 @@ if ($step === 'form' && $pdo && $_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Install · The Walking Billboard CMS</title>
 <meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="/assets/logo.png" type="image/png">
+<link rel="icon" href="<?= e(setting('site.logo', '/assets/logo.png')) ?>" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/admin/admin.css">
@@ -93,7 +94,7 @@ if ($step === 'form' && $pdo && $_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="admin">
 <div class="login-wrap">
   <div class="login-card" style="max-width:440px">
-    <div class="login-logo"><img class="brand-logo" src="/assets/logo.png" alt="The Walking Billboard"> <span>CMS Setup</span></div>
+    <div class="login-logo"><img class="brand-logo" src="<?= e(setting('site.logo', '/assets/logo.png')) ?>" alt="The Walking Billboard"> <span>CMS Setup</span></div>
 
     <?php if ($error): ?><div class="admin-flash error"><?= e($error) ?></div><?php endif; ?>
 
