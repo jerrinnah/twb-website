@@ -16,6 +16,8 @@ DirectoryIndex index.php index.html
 RewriteEngine On
 
 # Redirect direct .php / .html requests to their clean URL (301)
+# Only for GET — never redirect POSTs (a 301 would drop the form data).
+RewriteCond %{REQUEST_METHOD} =GET
 RewriteCond %{THE_REQUEST} \s/+([^.\s?]+)\.(?:php|html)[\s?] [NC]
 RewriteRule ^ /%1 [R=301,L]
 
