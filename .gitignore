@@ -1,3 +1,11 @@
 .DS_Store
 node_modules/
 *.log
+
+# Secrets — never commit real DB credentials
+includes/config.php
+
+# User-uploaded media (lives on the server, not in git)
+uploads/*
+!uploads/.htaccess
+!uploads/.gitkeep

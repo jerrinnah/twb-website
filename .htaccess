@@ -1,25 +1,40 @@
 # ── The Walking Billboard — server config ───────────────────
 Options -Indexes
-DirectoryIndex index.html
+DirectoryIndex index.php index.html
+
+# Protect sensitive files
+<FilesMatch "^(config\.php|composer\.(json|lock)|\.cpanel\.yml|\.gitignore)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
 
 RewriteEngine On
 
-# Redirect any direct .html request to its clean URL (301)
-RewriteCond %{THE_REQUEST} \s/+([^.\s?]+)\.html[\s?] [NC]
+# Redirect direct .php / .html requests to their clean URL (301)
+RewriteCond %{THE_REQUEST} \s/+([^.\s?]+)\.(?:php|html)[\s?] [NC]
 RewriteRule ^ /%1 [R=301,L]
 
-# Redirect /index (or /index.html handled above) to root
+# /index → /
 RewriteRule ^index/?$ / [R=301,L]
 
-# Internally serve the .html file for a clean URL
+# Blog post: /blog/{slug} → post.php
+RewriteRule ^blog/([a-z0-9-]+)/?$ post.php?slug=$1 [L,QSA]
+
+# Clean URL → matching .php file (e.g. /about → about.php)
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}\.html -f
-RewriteRule ^(.+?)/?$ $1.html [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{DOCUMENT_ROOT}/$1.php -f
+RewriteRule ^(.+?)/?$ $1.php [L,QSA]
 
 # ── Custom error page ───────────────────────────────────────
-ErrorDocument 404 /index.html
+ErrorDocument 404 /blog
 
-# ── Caching for static assets ───────────────────────────────
+# ── Caching ─────────────────────────────────────────────────
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType text/css "access plus 7 days"
@@ -27,10 +42,10 @@ ErrorDocument 404 /index.html
   ExpiresByType image/svg+xml "access plus 30 days"
   ExpiresByType image/png "access plus 30 days"
   ExpiresByType image/jpeg "access plus 30 days"
-  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType image/webp "access plus 30 days"
 </IfModule>
 
-# ── Gzip compression ────────────────────────────────────────
+# ── Gzip ────────────────────────────────────────────────────
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json
 </IfModule>

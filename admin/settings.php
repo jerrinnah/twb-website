@@ -1,0 +1,99 @@
+<?php
+require_once __DIR__ . '/../includes/auth.php';
+require_login();
+
+$siteFields = [
+    ['site.name', 'Business name', 'The Walking Billboard'],
+    ['site.phone', 'Phone (dial link, no spaces)', '+2348174623187'],
+    ['site.phone_display', 'Phone (shown)', '+234 817 462 3187'],
+    ['site.email', 'Email', 'hello@thewalkingbillboard.com'],
+    ['site.address', 'Address', 'Port Harcourt, Rivers State · Nigeria'],
+    ['site.instagram', 'Instagram URL', '#'],
+    ['site.twitter', 'X / Twitter URL', '#'],
+    ['site.facebook', 'Facebook URL', '#'],
+    ['site.linkedin', 'LinkedIn URL', '#'],
+    ['site.whatsapp', 'WhatsApp URL', 'https://wa.me/2348174623187'],
+];
+
+$errors = [];
+$me = current_user();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf()) {
+    $form = $_POST['form'] ?? '';
+
+    if ($form === 'site') {
+        foreach ($siteFields as [$key, , ]) {
+            if (array_key_exists($key, $_POST)) {
+                set_setting($key, trim((string) $_POST[$key]));
+            }
+        }
+        flash('Site settings saved.');
+        redirect('/admin/settings.php');
+    }
+
+    if ($form === 'password') {
+        $cur = (string) ($_POST['current'] ?? '');
+        $new = (string) ($_POST['new'] ?? '');
+        $cf  = (string) ($_POST['confirm'] ?? '');
+        $stmt = db()->prepare('SELECT password_hash FROM users WHERE id=?');
+        $stmt->execute([$me['id']]);
+        $hash = $stmt->fetchColumn();
+
+        if (!$hash || !password_verify($cur, $hash)) {
+            $errors[] = 'Your current password is incorrect.';
+        } elseif (strlen($new) < 8) {
+            $errors[] = 'New password must be at least 8 characters.';
+        } elseif ($new !== $cf) {
+            $errors[] = 'New password and confirmation do not match.';
+        } else {
+            db()->prepare('UPDATE users SET password_hash=? WHERE id=?')
+                ->execute([password_hash($new, PASSWORD_DEFAULT), $me['id']]);
+            flash('Password updated.');
+            redirect('/admin/settings.php');
+        }
+    }
+}
+
+$admin_title = 'Settings';
+$admin_active = 'settings';
+include __DIR__ . '/../includes/admin-header.php';
+?>
+
+<?php if ($errors): ?><div class="admin-flash error"><?= e(implode(' ', $errors)) ?></div><?php endif; ?>
+
+<form method="post" action="/admin/settings.php">
+  <?= csrf_field() ?>
+  <input type="hidden" name="form" value="site">
+  <div class="panel">
+    <h2>Contact details &amp; social links</h2>
+    <p class="muted" style="margin-bottom:1.25rem">These appear in the navigation, footer, and contact sections across every page.</p>
+    <?php foreach ($siteFields as [$key, $label, $default]): ?>
+      <div class="field">
+        <label for="<?= e($key) ?>"><?= e($label) ?></label>
+        <input class="input" id="<?= e($key) ?>" name="<?= e($key) ?>" type="text" value="<?= e(setting($key, $default)) ?>">
+      </div>
+    <?php endforeach; ?>
+    <button class="btn btn-primary" type="submit">Save settings</button>
+  </div>
+</form>
+
+<form method="post" action="/admin/settings.php">
+  <?= csrf_field() ?>
+  <input type="hidden" name="form" value="password">
+  <div class="panel">
+    <h2>Change your password</h2>
+    <div class="field"><label for="current">Current password</label><input class="input" id="current" name="current" type="password" autocomplete="current-password" required></div>
+    <div class="field-row">
+      <div class="field"><label for="new">New password</label><input class="input" id="new" name="new" type="password" autocomplete="new-password" required></div>
+      <div class="field"><label for="confirm">Confirm new password</label><input class="input" id="confirm" name="confirm" type="password" autocomplete="new-password" required></div>
+    </div>
+    <button class="btn btn-primary" type="submit">Update password</button>
+  </div>
+</form>
+
+<div class="panel">
+  <h2>Account</h2>
+  <p class="muted">Signed in as <strong><?= e($me['name']) ?></strong> (<?= e($me['username']) ?>).</p>
+</div>
+
+<?php include __DIR__ . '/../includes/admin-footer.php'; ?>

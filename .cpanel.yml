@@ -3,10 +3,13 @@ deployment:
   tasks:
     - export DEPLOYPATH=/home/thewbillboard/public_html/
     - /bin/mkdir -p $DEPLOYPATH
-    - /bin/cp index.html $DEPLOYPATH
-    - /bin/cp about.html $DEPLOYPATH
-    - /bin/cp services.html $DEPLOYPATH
-    - /bin/cp contact.html $DEPLOYPATH
-    - /bin/cp styles.css $DEPLOYPATH
-    - /bin/cp script.js $DEPLOYPATH
-    - /bin/cp .htaccess $DEPLOYPATH
+    - /bin/mkdir -p $DEPLOYPATH/uploads
+    # Front-end + app pages
+    - /bin/cp -f index.php about.php services.php contact.php blog.php post.php $DEPLOYPATH
+    - /bin/cp -f install.php styles.css script.js .htaccess $DEPLOYPATH
+    # Includes (merge — preserves your live includes/config.php, which is gitignored)
+    - /bin/cp -Rf includes $DEPLOYPATH
+    - /bin/cp -Rf admin $DEPLOYPATH
+    - /bin/cp -Rf sql $DEPLOYPATH
+    # Uploads: only copy the protective .htaccess, never overwrite stored media
+    - /bin/cp -f uploads/.htaccess $DEPLOYPATH/uploads/
