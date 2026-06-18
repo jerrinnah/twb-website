@@ -727,10 +727,10 @@ footer.site-footer {
 }
 
 /* ── FADE IN ─────────────────────────── */
-.fade-in {
-  opacity: 0; transform: translateY(24px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
+/* Content is visible by default; only hidden when JS is active (html.js),
+   so a missing/blocked script.js never leaves a blank page. */
+.fade-in { transition: opacity 0.6s ease, transform 0.6s ease; }
+.js .fade-in { opacity: 0; transform: translateY(24px); }
 .fade-in.visible { opacity: 1; transform: translateY(0); }
 
 /* ── RESPONSIVE ──────────────────────── */
