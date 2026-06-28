@@ -9,3 +9,6 @@ includes/config.php
 uploads/*
 !uploads/.htaccess
 !uploads/.gitkeep
+
+# runtime mail log
+logs/mail.log

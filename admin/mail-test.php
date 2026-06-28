@@ -95,4 +95,17 @@ include __DIR__ . '/../includes/admin-header.php';
   </div>
 <?php endif; ?>
 
+<?php $tail = mail_log_tail(25); ?>
+<div class="panel">
+  <h2>Recent send log</h2>
+  <p class="muted" style="margin-bottom:1rem">The outcome of every email the site has tried to send — including real contact-form submissions. <strong>OK</strong> means the mail server accepted it (if it's then missing, check the spam folder). <strong>FAIL</strong> means it was rejected — the reason is on the right.</p>
+  <?php if (!$tail): ?>
+    <p class="muted">No sends logged yet. Submit the contact form once, then refresh this page.</p>
+  <?php else: ?>
+    <pre style="background:#0c0c0c;color:#cfcfcf;padding:1rem;border-radius:8px;overflow:auto;font-size:0.78rem;line-height:1.6;white-space:pre"><?php
+      foreach (array_reverse($tail) as $line) { echo e($line) . "\n"; }
+    ?></pre>
+  <?php endif; ?>
+</div>
+
 <?php include __DIR__ . '/../includes/admin-footer.php'; ?>

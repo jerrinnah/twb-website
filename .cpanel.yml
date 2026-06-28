@@ -4,6 +4,7 @@ deployment:
     - export DEPLOYPATH=/home/thewbillboard/public_html/
     - /bin/mkdir -p $DEPLOYPATH
     - /bin/mkdir -p $DEPLOYPATH/uploads
+    - /bin/mkdir -p $DEPLOYPATH/logs
     # Front-end + app pages
     - /bin/cp -f index.php about.php services.php contact.php blog.php post.php $DEPLOYPATH
     - /bin/cp -f install.php styles.css script.js .htaccess $DEPLOYPATH
@@ -14,3 +15,5 @@ deployment:
     - /bin/cp -Rf assets $DEPLOYPATH
     # Uploads: only copy the protective .htaccess, never overwrite stored media
     - /bin/cp -f uploads/.htaccess $DEPLOYPATH/uploads/
+    # Logs: copy the protective .htaccess, never overwrite the runtime mail.log
+    - /bin/cp -f logs/.htaccess $DEPLOYPATH/logs/

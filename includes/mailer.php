@@ -20,14 +20,17 @@ function send_mail(string $to, string $subject, string $body, array $opts = []):
     $replyTo  = $opts['reply_to']  ?? $from;
 
     if (defined('SMTP_HOST') && SMTP_HOST !== '') {
+        $log = [];
         $ok = smtp_send(
             (string) SMTP_HOST,
             defined('SMTP_PORT') ? (int) SMTP_PORT : 465,
             defined('SMTP_SECURE') ? (string) SMTP_SECURE : 'ssl',
             defined('SMTP_USER') ? (string) SMTP_USER : '',
             defined('SMTP_PASS') ? (string) SMTP_PASS : '',
-            $from, $fromName, $to, $subject, $body, $replyTo
+            $from, $fromName, $to, $subject, $body, $replyTo,
+            $log
         );
+        mail_log($to, $subject, $ok ? 'OK' : 'FAIL', 'SMTP', $log);
         if ($ok) {
             return true;
         }
@@ -38,7 +41,44 @@ function send_mail(string $to, string $subject, string $body, array $opts = []):
               . 'Reply-To: ' . $replyTo . "\r\n"
               . "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8";
 
-    return @mail($to, mail_encode_subject($subject), $body, $headers, '-f' . $from);
+    $ok = @mail($to, mail_encode_subject($subject), $body, $headers, '-f' . $from);
+    mail_log($to, $subject, $ok ? 'OK' : 'FAIL', 'mail()', []);
+    return $ok;
+}
+
+/** Append a one-line outcome record to logs/mail.log (best-effort). */
+function mail_log(string $to, string $subject, string $result, string $mode, array $transcript): void
+{
+    $last = '';
+    foreach ($transcript as $line) {
+        if (strncmp($line, 'S: ', 3) === 0 || strncmp($line, 'CONNECT FAILED', 14) === 0) {
+            $last = trim($line);
+        }
+    }
+    $row = sprintf(
+        "%s\t%s\t%s\tto=%s\tsubj=%s%s",
+        date('Y-m-d H:i:s'),
+        $result,
+        $mode,
+        $to,
+        str_replace(["\t", "\n", "\r"], ' ', mb_substr($subject, 0, 70)),
+        $last !== '' ? "\t" . $last : ''
+    );
+    $dir = __DIR__ . '/../logs';
+    if (is_dir($dir) && is_writable($dir)) {
+        @file_put_contents($dir . '/mail.log', $row . "\n", FILE_APPEND | LOCK_EX);
+    }
+}
+
+/** Return the last N lines of the mail log, newest last. */
+function mail_log_tail(int $lines = 25): array
+{
+    $f = __DIR__ . '/../logs/mail.log';
+    if (!is_file($f)) {
+        return [];
+    }
+    $all = @file($f, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
+    return array_slice($all, -$lines);
 }
 
 /** RFC 2047 encode a subject only when it contains non-ASCII bytes. */
