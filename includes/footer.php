@@ -5,12 +5,12 @@ $year = date('Y');
 ?>
 <!-- WALKING LEGS DIVIDER -->
 <?php
-// A pair of heart-footed legs strolling across the footer divider — a nod to
+// A pair of legs-in-shoes strolling across the footer divider — a nod to
 // our "Walking Billboard" service. Decorative only.
 $twb_leg = '<svg viewBox="0 0 70 150" fill="currentColor" aria-hidden="true">'
   . '<path d="M31 4 C25 38 27 70 30 100 L46 100 C42 70 40 38 39 4 C37 1 33 1 31 4 Z"/>'
-  . '<path d="M35 148 C18 132 12 118 12 108 C12 100 20 98 26 102 C30 104 33 108 35 112 '
-  . 'C37 108 40 104 44 102 C50 98 58 100 58 108 C58 118 52 132 35 148 Z"/>'
+  . '<path d="M30 100 C25 112 23 120 21 128 C17 134 15 141 18 145 L58 145 '
+  . 'C65 145 66 138 61 133 C55 129 49 127 46 122 C45 114 45 106 47 100 Z"/>'
   . '</svg>';
 ?>
 <div class="footer-walk" aria-hidden="true">
