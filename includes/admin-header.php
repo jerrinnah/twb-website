@@ -17,6 +17,7 @@ $menu = [
     ['messages',  '/admin/messages.php', 'Messages'],
     ['users',     '/admin/users.php',    'Admin Users'],
     ['settings',  '/admin/settings.php', 'Settings'],
+    ['mailtest',  '/admin/mail-test.php', 'Email test'],
 ];
 
 // Unread message count for the badge

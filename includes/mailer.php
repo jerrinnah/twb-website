@@ -56,12 +56,15 @@ function mail_encode_subject(string $subject): string
 function smtp_send(
     string $host, int $port, string $secure,
     string $user, string $pass,
-    string $from, string $fromName, string $to, string $subject, string $body, string $replyTo
+    string $from, string $fromName, string $to, string $subject, string $body, string $replyTo,
+    ?array &$log = null
 ): bool {
     $transport = ($secure === 'ssl') ? "ssl://{$host}" : $host;
     $errno = 0; $errstr = '';
+    if ($log !== null) { $log[] = "Connecting to {$transport}:{$port} …"; }
     $fp = @stream_socket_client("{$transport}:{$port}", $errno, $errstr, 20, STREAM_CLIENT_CONNECT);
     if (!$fp) {
+        if ($log !== null) { $log[] = "CONNECT FAILED: [{$errno}] {$errstr}"; }
         return false;
     }
     stream_set_timeout($fp, 20);
@@ -78,9 +81,18 @@ function smtp_send(
         return $data;
     };
     $ok = static fn (string $resp, $codes): bool => in_array((int) substr($resp, 0, 3), (array) $codes, true);
-    $cmd = static function (string $c) use ($fp, $read): string {
+    $lastCode = 0;
+    $cmd = static function (string $c) use ($fp, $read, &$log, &$lastCode): string {
         fwrite($fp, $c . "\r\n");
-        return $read();
+        if ($log !== null) {
+            $shown = ($lastCode === 334) ? '****** (credentials)'
+                   : (strlen($c) > 120 ? '<message, ' . strlen($c) . ' bytes>' : $c);
+            $log[] = 'C: ' . $shown;
+        }
+        $resp = $read();
+        $lastCode = (int) substr($resp, 0, 3);
+        if ($log !== null) { $log[] = 'S: ' . rtrim($resp); }
+        return $resp;
     };
 
     $fail = static function () use ($fp): bool {
@@ -91,7 +103,9 @@ function smtp_send(
 
     $ehloName = $_SERVER['SERVER_NAME'] ?? 'localhost';
 
-    if (!$ok($read(), 220))                    { return $fail(); } // greeting
+    $greeting = $read();
+    if ($log !== null) { $log[] = 'S: ' . rtrim($greeting); }
+    if (!$ok($greeting, 220))                  { return $fail(); } // greeting
     if (!$ok($cmd('EHLO ' . $ehloName), 250))  { return $fail(); }
 
     if ($secure === 'tls') {
