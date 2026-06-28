@@ -2,11 +2,29 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_login();
 
-// Actions: mark read / delete
+// Actions: mark read / delete (single, from list, or bulk)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf()) {
     $mid = (int) ($_POST['id'] ?? 0);
     $act = $_POST['action'] ?? '';
-    if ($mid && $act === 'delete') {
+
+    if (isset($_POST['bulk'])) {
+        // Delete selected from the list
+        $ids = array_values(array_filter(array_map('intval', (array) ($_POST['ids'] ?? []))));
+        if ($ids) {
+            $in = implode(',', array_fill(0, count($ids), '?'));
+            db()->prepare("DELETE FROM messages WHERE id IN ($in)")->execute($ids);
+            flash(count($ids) . ' message' . (count($ids) === 1 ? '' : 's') . ' deleted.');
+        }
+        redirect('/admin/messages.php');
+    } elseif (isset($_POST['del'])) {
+        // Quick-delete a single row from the list
+        $id = (int) $_POST['del'];
+        if ($id) {
+            db()->prepare('DELETE FROM messages WHERE id=?')->execute([$id]);
+            flash('Message deleted.');
+        }
+        redirect('/admin/messages.php');
+    } elseif ($mid && $act === 'delete') {
         db()->prepare('DELETE FROM messages WHERE id=?')->execute([$mid]);
         flash('Message deleted.');
         redirect('/admin/messages.php');
@@ -61,23 +79,38 @@ include __DIR__ . '/../includes/admin-header.php';
 <?php endif; ?>
 
 <div class="panel">
-  <div class="panel-head"><h2><?= count($list) ?> message<?= count($list)===1?'':'s' ?></h2></div>
+  <div class="panel-head">
+    <h2><?= count($list) ?> message<?= count($list)===1?'':'s' ?></h2>
+    <?php if ($list): ?>
+      <button form="messages-form" class="btn btn-danger btn-sm" name="bulk" value="1"
+              onclick="return confirm('Delete the selected messages? This cannot be undone.');">Delete selected</button>
+    <?php endif; ?>
+  </div>
   <?php if (!$list): ?>
     <div class="empty"><p>No messages yet. Submissions from your contact form and homepage signups will appear here.</p></div>
   <?php else: ?>
-    <table class="table">
-      <thead><tr><th>From</th><th>Type</th><th>Preview</th><th>Received</th></tr></thead>
-      <tbody>
-      <?php foreach ($list as $m): ?>
-        <tr style="<?= $m['is_read'] ? '' : 'font-weight:600' ?>">
-          <td><a class="row-title" href="/admin/messages.php?id=<?= (int)$m['id'] ?>"><?= e($m['name'] ?: $m['email']) ?></a><?php if (!$m['is_read']): ?> <span class="tag unread">new</span><?php endif; ?></td>
-          <td class="muted"><?= e(ucfirst($m['source'])) ?></td>
-          <td class="muted"><?= e(mb_strimwidth($m['message'], 0, 60, '…')) ?></td>
-          <td class="muted"><?= e(fmt_date($m['created_at'])) ?></td>
-        </tr>
-      <?php endforeach; ?>
-      </tbody>
-    </table>
+    <form method="post" id="messages-form">
+      <?= csrf_field() ?>
+      <table class="table">
+        <thead><tr>
+          <th style="width:1%"><input type="checkbox" onclick="document.querySelectorAll('.msg-check').forEach(c=>c.checked=this.checked)" aria-label="Select all"></th>
+          <th>From</th><th>Type</th><th>Preview</th><th>Received</th><th style="width:1%"></th>
+        </tr></thead>
+        <tbody>
+        <?php foreach ($list as $m): ?>
+          <tr style="<?= $m['is_read'] ? '' : 'font-weight:600' ?>">
+            <td><input class="msg-check" type="checkbox" name="ids[]" value="<?= (int)$m['id'] ?>" aria-label="Select message"></td>
+            <td><a class="row-title" href="/admin/messages.php?id=<?= (int)$m['id'] ?>"><?= e($m['name'] ?: $m['email']) ?></a><?php if (!$m['is_read']): ?> <span class="tag unread">new</span><?php endif; ?></td>
+            <td class="muted"><?= e(ucfirst($m['source'])) ?></td>
+            <td class="muted"><?= e(mb_strimwidth($m['message'], 0, 60, '…')) ?></td>
+            <td class="muted"><?= e(fmt_date($m['created_at'])) ?></td>
+            <td><button class="btn btn-danger btn-sm" name="del" value="<?= (int)$m['id'] ?>"
+                        onclick="return confirm('Delete this message?');">Delete</button></td>
+          </tr>
+        <?php endforeach; ?>
+        </tbody>
+      </table>
+    </form>
   <?php endif; ?>
 </div>
 
