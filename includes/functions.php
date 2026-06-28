@@ -23,6 +23,26 @@ if (PHP_SAPI !== 'cli' && !defined('TWB_NO_HANDLER')) {
     });
 }
 
+/* ── Session bootstrap ────────────────────────────────────
+   Must run before any output so the session cookie is set on the
+   first (GET) request. Otherwise the CSRF token is embedded in the
+   form but no cookie reaches the browser, and the POST fails with
+   "session expired" for logged-out visitors. */
+if (PHP_SAPI !== 'cli' && session_status() !== PHP_SESSION_ACTIVE) {
+    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['SERVER_PORT'] ?? '') == 443)
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https'); // behind Cloudflare/proxy
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'secure'   => $https,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+    session_name('twb_session');
+    @session_start();
+}
+
 /* ── Output escaping ─────────────────────────────────────── */
 function e(?string $s): string
 {

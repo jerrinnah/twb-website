@@ -20,7 +20,7 @@ function start_session(): void
         'httponly' => true,
         'samesite' => 'Lax',
     ]);
-    session_name('twb_admin');
+    session_name('twb_session');
     session_start();
 }
 
