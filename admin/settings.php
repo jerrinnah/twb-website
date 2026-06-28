@@ -39,9 +39,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf()) {
     }
 
     if ($form === 'site') {
+        // Field names use array notation (settings[site.phone]) because PHP
+        // rewrites dots to underscores in plain POST keys.
+        $posted = is_array($_POST['settings'] ?? null) ? $_POST['settings'] : [];
         foreach ($siteFields as [$key, , ]) {
-            if (array_key_exists($key, $_POST)) {
-                set_setting($key, trim((string) $_POST[$key]));
+            if (array_key_exists($key, $posted)) {
+                set_setting($key, trim((string) $posted[$key]));
             }
         }
         flash('Site settings saved.');
@@ -110,7 +113,7 @@ include __DIR__ . '/../includes/admin-header.php';
     <?php foreach ($siteFields as [$key, $label, $default]): ?>
       <div class="field">
         <label for="<?= e($key) ?>"><?= e($label) ?></label>
-        <input class="input" id="<?= e($key) ?>" name="<?= e($key) ?>" type="text" value="<?= e(setting($key, $default)) ?>">
+        <input class="input" id="<?= e($key) ?>" name="settings[<?= e($key) ?>]" type="text" value="<?= e(setting($key, $default)) ?>">
       </div>
     <?php endforeach; ?>
     <button class="btn btn-primary" type="submit">Save settings</button>
