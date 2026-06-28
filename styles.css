@@ -779,26 +779,6 @@ footer.site-footer {
   .walker { transform: translateX(40px); }
 }
 
-/* ── SHOE WATERMARK (dark sections) ──── */
-.services-section, .testimonials-section, .contact-section,
-.story-section, .services-detail {
-  position: relative; isolation: isolate; overflow: hidden;
-}
-.services-section::after, .testimonials-section::after, .contact-section::after,
-.story-section::after, .services-detail::after {
-  content: "";
-  position: absolute; right: 3rem; bottom: 2.5rem;
-  width: 340px; height: 162px;
-  z-index: -1; pointer-events: none;
-  opacity: 0.07;
-  background: no-repeat right bottom / contain
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 200'%3E%3Cpath fill='white' d='M64 172 C54 164 52 130 58 108 C62 92 78 84 98 86 C122 80 150 82 174 98 C190 107 198 106 212 102 C238 96 260 90 288 92 C332 94 374 112 398 136 C412 148 414 160 402 170 C392 178 366 182 342 182 L100 182 C82 182 72 180 64 172 Z'/%3E%3C/svg%3E");
-}
-@media (max-width: 768px) {
-  .services-section::after, .testimonials-section::after, .contact-section::after,
-  .story-section::after, .services-detail::after { display: none; }
-}
-
 /* ── TICKER ──────────────────────────── */
 .ticker-wrap {
   background: var(--blue); padding: 0.7rem 0; overflow: hidden; white-space: nowrap;
