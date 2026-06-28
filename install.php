@@ -58,7 +58,7 @@ if ($step === 'form' && $pdo && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 'site.name' => 'The Walking Billboard',
                 'site.phone' => '+2348174623187',
                 'site.phone_display' => '+234 817 462 3187',
-                'site.email' => $email !== '' ? $email : 'hello@thewalkingbillboard.com',
+                'site.email' => $email !== '' ? $email : 'enquiry@thewbillboard.com',
                 'site.address' => 'Port Harcourt, Rivers State · Nigeria',
                 'site.whatsapp' => 'https://wa.me/2348174623187',
                 'site.instagram' => '#', 'site.twitter' => '#', 'site.facebook' => '#', 'site.linkedin' => '#',
@@ -119,7 +119,7 @@ if ($step === 'form' && $pdo && $_SERVER['REQUEST_METHOD'] === 'POST') {
       <form method="post" action="/install.php">
         <div class="field"><label for="name">Your name</label><input class="input" id="name" name="name" type="text" placeholder="Jerry Nnah"></div>
         <div class="field"><label for="username">Username</label><input class="input" id="username" name="username" type="text" required placeholder="admin"></div>
-        <div class="field"><label for="email">Email</label><input class="input" id="email" name="email" type="email" placeholder="hello@thewalkingbillboard.com"></div>
+        <div class="field"><label for="email">Email</label><input class="input" id="email" name="email" type="email" placeholder="enquiry@thewbillboard.com"></div>
         <div class="field"><label for="password">Password (min 8 chars)</label><input class="input" id="password" name="password" type="password" required></div>
         <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Install</button>
       </form>

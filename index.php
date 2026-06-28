@@ -6,7 +6,7 @@ $active = 'home';
 include __DIR__ . '/includes/header.php';
 
 $phone   = setting('site.phone', '+2348174623187');
-$email   = setting('site.email', 'hello@thewalkingbillboard.com');
+$email   = setting('site.email', 'enquiry@thewbillboard.com');
 $address = setting('site.address', 'Port Harcourt, Rivers State · Nigeria');
 ?>
 

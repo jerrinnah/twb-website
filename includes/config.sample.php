@@ -18,7 +18,7 @@ define('DB_PASS', 'CHANGE_ME');
 define('SITE_URL', 'https://thewbillboard.com');
 
 // Where contact form notifications are sent.
-define('ADMIN_EMAIL', 'hello@thewalkingbillboard.com');
+define('ADMIN_EMAIL', 'enquiry@thewbillboard.com');
 
 // ── Security ────────────────────────────────────────────────
 // Change this to a long random string (used to harden sessions).

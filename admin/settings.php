@@ -6,7 +6,7 @@ $siteFields = [
     ['site.name', 'Business name', 'The Walking Billboard'],
     ['site.phone', 'Phone (dial link, no spaces)', '+2348174623187'],
     ['site.phone_display', 'Phone (shown)', '+234 817 462 3187'],
-    ['site.email', 'Email', 'hello@thewalkingbillboard.com'],
+    ['site.email', 'Email', 'enquiry@thewbillboard.com'],
     ['site.address', 'Address', 'Port Harcourt, Rivers State · Nigeria'],
     ['site.instagram', 'Instagram URL', '#'],
     ['site.twitter', 'X / Twitter URL', '#'],

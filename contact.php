@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
 
             // Best-effort email notification (won't block on failure)
-            $to   = defined('ADMIN_EMAIL') ? ADMIN_EMAIL : setting('site.email', 'hello@thewalkingbillboard.com');
+            $to   = defined('ADMIN_EMAIL') ? ADMIN_EMAIL : setting('site.email', 'enquiry@thewbillboard.com');
             $subj = 'New ' . ($source === 'lead' ? 'lead' : 'inquiry') . ' from ' . ($values['name'] ?: $values['email']);
             $body = "Name: {$values['name']}\nEmail: {$values['email']}\nCompany: {$values['company']}\n\n{$values['message']}";
             $headers = 'From: website@' . (parse_url(setting('site.url', 'https://thewbillboard.com'), PHP_URL_HOST) ?: 'thewbillboard.com')
@@ -62,7 +62,7 @@ $active = 'contact';
 include __DIR__ . '/includes/header.php';
 
 $phone   = setting('site.phone', '+2348174623187');
-$email   = setting('site.email', 'hello@thewalkingbillboard.com');
+$email   = setting('site.email', 'enquiry@thewbillboard.com');
 $address = setting('site.address', 'Port Harcourt, Rivers State · Nigeria');
 ?>
 
