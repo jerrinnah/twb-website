@@ -729,7 +729,7 @@ footer.site-footer {
 /* ── WALKING LEGS DIVIDER (above footer) ── */
 .footer-walk {
   position: relative;
-  height: 72px;
+  height: 86px;
   background: #060608;
   overflow: hidden;
 }
@@ -742,7 +742,7 @@ footer.site-footer {
 }
 .walker {
   position: absolute; bottom: 4px; left: 0;
-  width: 56px; height: 64px;
+  width: 70px; height: 76px;
   animation: walk-across 14s linear infinite;
 }
 .walker-bob {
@@ -751,13 +751,13 @@ footer.site-footer {
 }
 .leg {
   position: absolute; bottom: 0;
-  width: 30px; color: #F6F7FA;
+  width: 38px; color: #F6F7FA;
   transform-origin: top center;
   animation: leg-step 0.72s ease-in-out infinite;
 }
 .leg svg { display: block; width: 100%; height: auto; }
 .leg-back  { left: 0;    color: #C7CCD6; }   /* slightly darker = depth */
-.leg-front { left: 16px; animation-delay: -0.36s; }
+.leg-front { left: 26px; animation-delay: -0.36s; }
 
 @keyframes walk-across {
   from { transform: translateX(-80px); }

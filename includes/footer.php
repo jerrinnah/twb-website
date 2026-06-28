@@ -6,11 +6,14 @@ $year = date('Y');
 <!-- WALKING LEGS DIVIDER -->
 <?php
 // A pair of legs-in-shoes strolling across the footer divider — a nod to
-// our "Walking Billboard" service. Decorative only.
-$twb_leg = '<svg viewBox="0 0 70 150" fill="currentColor" aria-hidden="true">'
-  . '<path d="M31 4 C25 38 27 70 30 100 L46 100 C42 70 40 38 39 4 C37 1 33 1 31 4 Z"/>'
-  . '<path d="M30 100 C25 112 23 120 21 128 C17 134 15 141 18 145 L58 145 '
-  . 'C65 145 66 138 61 133 C55 129 49 127 46 122 C45 114 45 106 47 100 Z"/>'
+// our "Walking Billboard" service. Traced from the brand sketch: thick tapered
+// leg, ankle notch, chunky heart-style shoe. Decorative only.
+$twb_leg = '<svg viewBox="0 0 300 580" fill="currentColor" aria-hidden="true">'
+  . '<path d="M116 14 C100 130 116 268 140 358 L188 358 C202 268 192 138 182 16 '
+  . 'C178 4 122 3 116 14 Z"/>'
+  . '<path d="M158 566 C120 520 40 470 28 405 C20 360 60 330 100 345 '
+  . 'C128 356 150 380 158 405 C166 380 188 356 216 345 C256 330 296 360 288 405 '
+  . 'C276 470 196 520 158 566 Z"/>'
   . '</svg>';
 ?>
 <div class="footer-walk" aria-hidden="true">
