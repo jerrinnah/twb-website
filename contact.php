@@ -3,7 +3,17 @@ require_once __DIR__ . '/includes/functions.php';
 
 $errors = [];
 $sent   = false;
-$values = ['name' => '', 'email' => '', 'company' => '', 'message' => ''];
+$values = ['name' => '', 'email' => '', 'company' => '', 'message' => '', 'services' => []];
+
+// Services a client can express interest in (kept in sync with services.php)
+$service_options = [
+    'PR & Brand Storytelling',
+    'Walking Billboard Activations',
+    'Content Creation & Social Management',
+    'Influencer Matchmaking & Campaign Management',
+    'Brand Audit & Strategy',
+    'Event PR & Lead-to-Sales Conversion',
+];
 
 // Pre-fill email from the homepage "Get Started" lead forms (?email=)
 if (isset($_GET['email'])) {
@@ -18,16 +28,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $values['email']   = trim((string) ($_POST['email'] ?? ''));
         $values['company'] = trim((string) ($_POST['company'] ?? ''));
         $values['message'] = trim((string) ($_POST['message'] ?? ''));
+        // Only keep posted services that are in our allowed list
+        $values['services'] = array_values(array_intersect($service_options, (array) ($_POST['services'] ?? [])));
         $source            = ($_POST['source'] ?? '') === 'lead' ? 'lead' : 'contact';
 
         if ($values['email'] === '' || !filter_var($values['email'], FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'Please enter a valid email address.';
         }
-        if ($source === 'contact' && $values['message'] === '') {
-            $errors[] = 'Please tell us how we can help.';
+        if ($source === 'contact' && $values['message'] === '' && !$values['services']) {
+            $errors[] = 'Please select a service or tell us how we can help.';
         }
 
         if (!$errors) {
+            // Fold the selected services into the stored message + notification
+            $message_body = $values['message'];
+            if ($values['services']) {
+                $prefix = 'Services of interest: ' . implode(', ', $values['services']);
+                $message_body = $message_body !== '' ? $prefix . "\n\n" . $message_body : $prefix;
+            }
+            if ($message_body === '') {
+                $message_body = '(Lead — requested consultation)';
+            }
+
             $stmt = db()->prepare(
                 'INSERT INTO messages (name, email, company, message, source) VALUES (?, ?, ?, ?, ?)'
             );
@@ -35,14 +57,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 mb_substr($values['name'], 0, 160),
                 mb_substr($values['email'], 0, 190),
                 mb_substr($values['company'], 0, 190),
-                $values['message'] !== '' ? $values['message'] : '(Lead — requested consultation)',
+                $message_body,
                 $source,
             ]);
 
             // Best-effort email notification (won't block on failure)
             $to   = defined('ADMIN_EMAIL') ? ADMIN_EMAIL : setting('site.email', 'enquiry@thewbillboard.com');
             $subj = 'New ' . ($source === 'lead' ? 'lead' : 'inquiry') . ' from ' . ($values['name'] ?: $values['email']);
-            $body = "Name: {$values['name']}\nEmail: {$values['email']}\nCompany: {$values['company']}\n\n{$values['message']}";
+            $body = "Name: {$values['name']}\nEmail: {$values['email']}\nCompany: {$values['company']}\n\n{$message_body}";
             $headers = 'From: website@' . (parse_url(setting('site.url', 'https://thewbillboard.com'), PHP_URL_HOST) ?: 'thewbillboard.com')
                      . "\r\nReply-To: {$values['email']}\r\nContent-Type: text/plain; charset=UTF-8";
             @mail($to, $subj, $body, $headers);
@@ -119,8 +141,19 @@ $address = setting('site.address', 'Port Harcourt, Rivers State · Nigeria');
         <input class="field-input" id="company" name="company" type="text" value="<?= e($values['company']) ?>" placeholder="Brand name">
       </div>
       <div>
-        <label class="field-label" for="message">How can we help?</label>
-        <textarea class="field-textarea" id="message" name="message" required placeholder="Tell us about your goals, audience, timeline, and current challenges."><?= e($values['message']) ?></textarea>
+        <label class="field-label">Which services are you interested in?</label>
+        <div class="field-checks">
+          <?php foreach ($service_options as $opt): ?>
+            <label class="field-check">
+              <input type="checkbox" name="services[]" value="<?= e($opt) ?>" <?= in_array($opt, $values['services'], true) ? 'checked' : '' ?>>
+              <span><?= e($opt) ?></span>
+            </label>
+          <?php endforeach; ?>
+        </div>
+      </div>
+      <div>
+        <label class="field-label" for="message">Anything else? <span style="text-transform:none;letter-spacing:0;opacity:0.55">(optional)</span></label>
+        <textarea class="field-textarea" id="message" name="message" placeholder="Tell us about your goals, audience, timeline, and current challenges."><?= e($values['message']) ?></textarea>
       </div>
       <button class="btn-pill-blue" type="submit" style="align-self:flex-start;margin-top:0.25rem">Send Inquiry <span>→</span></button>
     </form>

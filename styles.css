@@ -555,6 +555,30 @@ nav {
 .field-input:focus, .field-textarea:focus { border-color: var(--blue); }
 .field-textarea { min-height: 140px; resize: vertical; }
 
+/* service checkboxes on the enquiry form */
+.field-checks { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.field-check {
+  display: flex; align-items: center; gap: 0.6rem; cursor: pointer;
+  background: rgba(255,255,255,0.04); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0.7rem 0.85rem;
+  font-size: 0.8rem; color: rgba(255,255,255,0.75); transition: border-color 0.2s, background 0.2s;
+}
+.field-check:hover { border-color: rgba(255,255,255,0.18); }
+.field-check input {
+  appearance: none; -webkit-appearance: none; flex-shrink: 0;
+  width: 18px; height: 18px; border: 1.5px solid var(--border);
+  border-radius: 5px; background: rgba(255,255,255,0.06); cursor: pointer;
+  position: relative; transition: background 0.15s, border-color 0.15s;
+}
+.field-check input:checked { background: var(--blue); border-color: var(--blue); }
+.field-check input:checked::after {
+  content: ""; position: absolute; left: 5px; top: 1.5px;
+  width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.field-check:has(input:checked) { border-color: var(--blue); background: rgba(0,87,255,0.08); color: #fff; }
+@media (max-width: 560px) { .field-checks { grid-template-columns: 1fr; } }
+
 /* compact inline email row (homepage contact) */
 .contact-input-row {
   display: flex; gap: 0; margin-bottom: 1rem;
