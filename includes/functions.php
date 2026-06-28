@@ -5,6 +5,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/mailer.php';
 
 /* ── Friendly failure for uncaught errors (no info leak) ──── */
 if (PHP_SAPI !== 'cli' && !defined('TWB_NO_HANDLER')) {

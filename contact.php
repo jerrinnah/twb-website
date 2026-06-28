@@ -65,20 +65,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Always routes to the dedicated enquiry inbox (default enquiry@thewbillboard.com),
             // independent of the public-facing display email.
             $to = setting('site.enquiry_email', defined('ADMIN_EMAIL') && ADMIN_EMAIL ? ADMIN_EMAIL : 'enquiry@thewbillboard.com');
-            // Send AS a real domain mailbox (the enquiry inbox) so the From and
-            // envelope sender align with SPF/DKIM and pass sender verification —
-            // 'website@…' is usually not a real account and gets silently dropped.
+            // Send AS a real domain mailbox so From/envelope align with SPF/DKIM.
             $from  = filter_var($to, FILTER_VALIDATE_EMAIL) ? $to : 'enquiry@thewbillboard.com';
             $reply = filter_var($values['email'], FILTER_VALIDATE_EMAIL) ? $values['email'] : $from;
             $subj = 'New ' . ($source === 'lead' ? 'lead' : 'inquiry') . ' from ' . ($values['name'] ?: $values['email'])
                   . ($values['services'] ? ' — ' . implode(', ', $values['services']) : '');
             $body = "Name: {$values['name']}\nEmail: {$values['email']}\nCompany: {$values['company']}\n\n{$message_body}";
-            $headers  = 'From: The Walking Billboard <' . $from . ">\r\n";
-            $headers .= 'Reply-To: ' . $reply . "\r\n";
-            $headers .= "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8";
-            // The -f envelope sender is what cPanel/exim checks; a real local
-            // mailbox here is the single biggest deliverability fix.
-            @mail($to, $subj, $body, $headers, '-f' . $from);
+            // Uses authenticated SMTP when configured in config.php, else mail().
+            send_mail($to, $subj, $body, ['from' => $from, 'reply_to' => $reply]);
 
             redirect('/contact?sent=1');
         }
