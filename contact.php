@@ -61,9 +61,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $source,
             ]);
 
-            // Best-effort email notification (won't block on failure)
-            $to   = defined('ADMIN_EMAIL') ? ADMIN_EMAIL : setting('site.email', 'enquiry@thewbillboard.com');
-            $subj = 'New ' . ($source === 'lead' ? 'lead' : 'inquiry') . ' from ' . ($values['name'] ?: $values['email']);
+            // Best-effort email notification (won't block on failure).
+            // Always routes to the dedicated enquiry inbox (default enquiry@thewbillboard.com),
+            // independent of the public-facing display email.
+            $to = setting('site.enquiry_email', defined('ADMIN_EMAIL') && ADMIN_EMAIL ? ADMIN_EMAIL : 'enquiry@thewbillboard.com');
+            $subj = 'New ' . ($source === 'lead' ? 'lead' : 'inquiry') . ' from ' . ($values['name'] ?: $values['email'])
+                  . ($values['services'] ? ' — ' . implode(', ', $values['services']) : '');
             $body = "Name: {$values['name']}\nEmail: {$values['email']}\nCompany: {$values['company']}\n\n{$message_body}";
             $headers = 'From: website@' . (parse_url(setting('site.url', 'https://thewbillboard.com'), PHP_URL_HOST) ?: 'thewbillboard.com')
                      . "\r\nReply-To: {$values['email']}\r\nContent-Type: text/plain; charset=UTF-8";

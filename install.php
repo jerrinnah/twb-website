@@ -59,6 +59,7 @@ if ($step === 'form' && $pdo && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 'site.phone' => '+2348174623187',
                 'site.phone_display' => '+234 817 462 3187',
                 'site.email' => $email !== '' ? $email : 'enquiry@thewbillboard.com',
+                'site.enquiry_email' => 'enquiry@thewbillboard.com',
                 'site.address' => 'Port Harcourt, Rivers State · Nigeria',
                 'site.whatsapp' => 'https://wa.me/2348174623187',
                 'site.instagram' => '#', 'site.twitter' => '#', 'site.facebook' => '#', 'site.linkedin' => '#',
