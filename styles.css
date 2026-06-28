@@ -726,6 +726,59 @@ footer.site-footer {
 
 .footer-copy { font-size: 0.72rem; color: rgba(255,255,255,0.15); }
 
+/* ── WALKING LEGS DIVIDER (above footer) ── */
+.footer-walk {
+  position: relative;
+  height: 72px;
+  background: #060608;
+  overflow: hidden;
+}
+/* the "thicker line" the legs walk across */
+.footer-walk::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 4px;
+  background: var(--blue);
+}
+.walker {
+  position: absolute; bottom: 4px; left: 0;
+  width: 56px; height: 64px;
+  animation: walk-across 14s linear infinite;
+}
+.walker-bob {
+  position: absolute; inset: 0;
+  animation: walk-bob 0.36s ease-in-out infinite alternate;
+}
+.leg {
+  position: absolute; bottom: 0;
+  width: 30px; color: #F6F7FA;
+  transform-origin: top center;
+  animation: leg-step 0.72s ease-in-out infinite;
+}
+.leg svg { display: block; width: 100%; height: auto; }
+.leg-back  { left: 0;    color: #C7CCD6; }   /* slightly darker = depth */
+.leg-front { left: 16px; animation-delay: -0.36s; }
+
+@keyframes walk-across {
+  from { transform: translateX(-80px); }
+  to   { transform: translateX(calc(100vw + 40px)); }
+}
+@keyframes walk-bob {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-5px); }
+}
+@keyframes leg-step {
+  0%   { transform: rotate(20deg)  translateY(0); }
+  25%  { transform: rotate(0deg)   translateY(-7px); }
+  50%  { transform: rotate(-20deg) translateY(0); }
+  75%  { transform: rotate(0deg)   translateY(-2px); }
+  100% { transform: rotate(20deg)  translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .walker, .walker-bob, .leg { animation: none; }
+  .walker { transform: translateX(40px); }
+}
+
 /* ── TICKER ──────────────────────────── */
 .ticker-wrap {
   background: var(--blue); padding: 0.7rem 0; overflow: hidden; white-space: nowrap;
