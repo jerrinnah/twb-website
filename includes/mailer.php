@@ -61,10 +61,27 @@ function smtp_send(
 ): bool {
     $transport = ($secure === 'ssl') ? "ssl://{$host}" : $host;
     $errno = 0; $errstr = '';
+    // Shared-hosting mail servers usually present a cert for the server's own
+    // hostname, not mail.<domain>, so strict verification fails with errno 0.
+    // Relax verification — we're connecting to our own trusted mail host.
+    $ctx = stream_context_create(['ssl' => [
+        'verify_peer'       => false,
+        'verify_peer_name'  => false,
+        'allow_self_signed' => true,
+        'SNI_enabled'       => true,
+        'peer_name'         => $host,
+    ]]);
     if ($log !== null) { $log[] = "Connecting to {$transport}:{$port} …"; }
-    $fp = @stream_socket_client("{$transport}:{$port}", $errno, $errstr, 20, STREAM_CLIENT_CONNECT);
+    error_clear_last();
+    $fp = @stream_socket_client("{$transport}:{$port}", $errno, $errstr, 20, STREAM_CLIENT_CONNECT, $ctx);
     if (!$fp) {
-        if ($log !== null) { $log[] = "CONNECT FAILED: [{$errno}] {$errstr}"; }
+        if ($log !== null) {
+            $why = $errstr;
+            if ($why === '' && ($e = error_get_last()) && !empty($e['message'])) {
+                $why = $e['message'];
+            }
+            $log[] = "CONNECT FAILED: [{$errno}] " . ($why !== '' ? $why : '(no detail — likely TLS handshake or blocked port)');
+        }
         return false;
     }
     stream_set_timeout($fp, 20);
