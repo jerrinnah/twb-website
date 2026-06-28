@@ -3,7 +3,7 @@ require_once __DIR__ . '/includes/functions.php';
 
 $errors = [];
 $sent   = false;
-$values = ['name' => '', 'email' => '', 'company' => '', 'message' => '', 'services' => []];
+$values = ['name' => '', 'email' => '', 'phone' => '', 'company' => '', 'message' => '', 'services' => []];
 
 // Services a client can express interest in (kept in sync with services.php)
 $service_options = [
@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $values['name']    = trim((string) ($_POST['name'] ?? ''));
         $values['email']   = trim((string) ($_POST['email'] ?? ''));
+        $values['phone']   = trim((string) ($_POST['phone'] ?? ''));
         $values['company'] = trim((string) ($_POST['company'] ?? ''));
         $values['message'] = trim((string) ($_POST['message'] ?? ''));
         // Only keep posted services that are in our allowed list
@@ -40,10 +41,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (!$errors) {
-            // Fold the selected services into the stored message + notification
+            // Fold phone + selected services into the stored message + notification
+            // (the messages table has no dedicated phone/services columns).
+            $meta = [];
+            if ($values['phone'] !== '')    { $meta[] = 'Phone: ' . mb_substr($values['phone'], 0, 40); }
+            if ($values['services'])        { $meta[] = 'Services of interest: ' . implode(', ', $values['services']); }
             $message_body = $values['message'];
-            if ($values['services']) {
-                $prefix = 'Services of interest: ' . implode(', ', $values['services']);
+            if ($meta) {
+                $prefix = implode("\n", $meta);
                 $message_body = $message_body !== '' ? $prefix . "\n\n" . $message_body : $prefix;
             }
             if ($message_body === '') {
@@ -141,9 +146,15 @@ $address = setting('site.address', 'Port Harcourt, Rivers State · Nigeria');
           <input class="field-input" id="email" name="email" type="email" required value="<?= e($values['email']) ?>" placeholder="your@email.com">
         </div>
       </div>
-      <div>
-        <label class="field-label" for="company">Brand / Company</label>
-        <input class="field-input" id="company" name="company" type="text" value="<?= e($values['company']) ?>" placeholder="Brand name">
+      <div class="contact-form-grid">
+        <div>
+          <label class="field-label" for="phone">Phone</label>
+          <input class="field-input" id="phone" name="phone" type="tel" value="<?= e($values['phone']) ?>" placeholder="+234 800 000 0000">
+        </div>
+        <div>
+          <label class="field-label" for="company">Brand / Company</label>
+          <input class="field-input" id="company" name="company" type="text" value="<?= e($values['company']) ?>" placeholder="Brand name">
+        </div>
       </div>
       <div>
         <label class="field-label">Which services are you interested in?</label>
