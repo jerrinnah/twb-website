@@ -16,6 +16,16 @@ if (!$post || ($post['status'] !== 'published') ||
     exit;
 }
 
+// Count the view (real visitors only — skip logged-in admins). Best-effort.
+run_migrations();
+if (empty($_SESSION['uid'])) {
+    try {
+        db()->prepare('UPDATE posts SET views = views + 1 WHERE id = ?')->execute([$post['id']]);
+    } catch (Throwable $e) {
+        // column not present yet / transient error — never block the page
+    }
+}
+
 $excerpt = $post['excerpt'] !== '' ? $post['excerpt'] : make_excerpt($post['body']);
 $page_title = $post['title'] . ' | The Walking Billboard';
 $page_desc  = $excerpt;

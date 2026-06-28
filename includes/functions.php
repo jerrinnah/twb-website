@@ -83,6 +83,39 @@ function set_setting(string $key, string $value): void
     $stmt->execute([$key, $value]);
 }
 
+/* ── Lightweight schema migrations ───────────────────────────
+   Brings an already-installed database up to date without a separate
+   migration tool. Runs at most once per request, and only does real work
+   until schema.version reaches the target. Failures are swallowed so a
+   page never breaks; the migration simply retries on the next request. */
+function run_migrations(): void
+{
+    static $ran = false;
+    if ($ran) {
+        return;
+    }
+    $ran = true;
+
+    $target  = 1;
+    $version = (int) setting('schema.version', '0');
+    if ($version >= $target) {
+        return;
+    }
+
+    try {
+        if ($version < 1) {
+            // v1: per-post view counter
+            $exists = db()->query("SHOW COLUMNS FROM posts LIKE 'views'")->fetch();
+            if (!$exists) {
+                db()->exec('ALTER TABLE posts ADD COLUMN views INT UNSIGNED NOT NULL DEFAULT 0');
+            }
+        }
+        set_setting('schema.version', (string) $target);
+    } catch (Throwable $e) {
+        // Leave the version unset and retry next request rather than 500.
+    }
+}
+
 /* ── Slugs ───────────────────────────────────────────────── */
 function slugify(string $text): string
 {

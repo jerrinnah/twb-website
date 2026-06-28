@@ -68,6 +68,7 @@ function require_login(): void
     if (!is_logged_in()) {
         redirect('/admin/login.php');
     }
+    run_migrations();
 }
 
 /** Verify username + password against the DB. */

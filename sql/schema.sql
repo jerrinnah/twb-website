@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS posts (
   category_id    INT UNSIGNED NULL,
   author_id      INT UNSIGNED NULL,
   status         ENUM('draft','published') NOT NULL DEFAULT 'draft',
+  views          INT UNSIGNED NOT NULL DEFAULT 0,
   created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   published_at   DATETIME NULL,
